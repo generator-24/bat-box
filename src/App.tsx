@@ -8,9 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { DEFAULT_CONTENT, COLOR_VARIATIONS, TECHNICAL_PHOTOS } from './data';
 import { SiteContent } from './types';
 import GeneratorRenderer from './components/GeneratorRenderer';
-import CmsPanel from './components/CmsPanel';
 import {
-  Wrench,
   Settings,
   ShieldCheck,
   Cpu,
@@ -32,27 +30,8 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  // CMS state loaded from localStorage or falling back to default Russian generator content
-  const [content, setContent] = useState<SiteContent>(() => {
-    const saved = localStorage.getItem('genbox_cms_content');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Ensure generators exist
-        if (parsed && parsed.generators && parsed.generators.length > 0) {
-          return parsed;
-        }
-      } catch (e) {
-        console.error('Error parsing localStorage content', e);
-      }
-    }
-    return DEFAULT_CONTENT;
-  });
-
-  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    return localStorage.getItem('genbox_is_admin') === 'true';
-  });
-  const [logoClicks, setLogoClicks] = useState<number>(0);
+  // CMS state loaded from default Russian generator content
+  const [content, setContent] = useState<SiteContent>(DEFAULT_CONTENT);
 
   // Configurator options state
   const [includeBox, setIncludeBox] = useState<boolean>(true);
@@ -65,10 +44,8 @@ export default function App() {
   
   const [selectedStrap, setSelectedStrap] = useState<string>('крышка на газовых упорах');
   const [spinningSpeed, setSpinningSpeed] = useState<number>(2); // 0 (stop) to 5 (fast)
-  const [cmsOpen, setCmsOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState<boolean>(false);
   const [customDialColor, setCustomDialColor] = useState<string>('#d97706');
-  const [showToast, setShowToast] = useState<boolean>(false);
   const [copiedPhone, setCopiedPhone] = useState<boolean>(false);
   const [copiedEmail, setCopiedEmail] = useState<boolean>(false);
 
@@ -101,38 +78,6 @@ export default function App() {
   );
   const emailHref = `mailto:gemba.egor@yandex.ru?subject=${emailSubject}&body=${emailBody}`;
 
-  // Admin query listener & auto-clearing
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const adminParam = params.get('admin');
-    if (adminParam === 'masterbox') {
-      setIsAdmin(true);
-      localStorage.setItem('genbox_is_admin', 'true');
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (adminParam === 'logout') {
-      setIsAdmin(false);
-      localStorage.removeItem('genbox_is_admin');
-      setCmsOpen(false);
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
-
-  const handleLogoClick = () => {
-    const nextClicks = logoClicks + 1;
-    setLogoClicks(nextClicks);
-    if (nextClicks >= 5) {
-      setLogoClicks(0);
-      const password = prompt('Введите пароль администратора для разблокировки CMS настроек (по умолчанию "masterbox"):');
-      if (password === 'masterbox') {
-        setIsAdmin(true);
-        localStorage.setItem('genbox_is_admin', 'true');
-        alert('Панель CMS разблокирована! Теперь кнопка отображается в шапке сайта.');
-      } else if (password !== null) {
-        alert('Неверный код доступа.');
-      }
-    }
-  };
-
   // Sync color when color-variation changes
   useEffect(() => {
     setCustomDialColor(activeColor.accentColor);
@@ -146,26 +91,6 @@ export default function App() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleUpdateContent = (newContent: SiteContent) => {
-    setContent(newContent);
-    localStorage.setItem('genbox_cms_content', JSON.stringify(newContent));
-    
-    // Quick success toast
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-  };
-
-  const handleResetContent = () => {
-    if (window.confirm('Сбросить весь контент к значениям мануфактуры bat box?')) {
-      localStorage.removeItem('genbox_cms_content');
-      setContent(DEFAULT_CONTENT);
-      setActiveColorId('wood-black');
-      setIncludeBox(true);
-      setCustomPaint(false);
-      setVisualizerTab('photo');
-    }
-  };
 
   // Format price helper
   const formatPrice = (num: number) => {
@@ -182,21 +107,6 @@ export default function App() {
         <div className="absolute top-[40%] right-[10%] w-[400px] h-[400px] bg-emerald-50 rounded-full blur-[100px] opacity-40" />
       </div>
 
-      {/* FLOATING SUCCESS TOAST */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-white border border-emerald-200 text-emerald-700 px-5 py-2.5 rounded-full text-xs font-medium shadow-2xl flex items-center gap-2"
-          >
-            <CheckCircle2 size={15} className="text-emerald-500" />
-            Контент успешно обновлен и сохранен локально!
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* LIGHT EMBELLISHED HEADER NAVIGATION */}
       <header
         className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
@@ -206,7 +116,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Minimalist modern branding logo */}
-            <div onClick={handleLogoClick} className="flex flex-col cursor-pointer select-none" title="BAT BOX">
+            <div className="flex flex-col select-none" title="BAT BOX">
               <span className="font-display font-black tracking-[0.22em] text-xl text-zinc-900 flex items-center gap-1 uppercase">
                 BAT <span className="text-amber-600">BOX</span>
               </span>
@@ -219,7 +129,7 @@ export default function App() {
 
           <div className="flex items-center gap-6">
             <div className="hidden md:flex items-center" title="Генераторная установка">
-              <svg className="w-12 h-9 text-zinc-400/80 hover:text-amber-500 transition-all duration-300" viewBox="0 0 48 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-12 h-9 text-zinc-400/80 hover:text-amber-500 transition-all duration-300" viewBox="0 0 48 36" fill="none" xmlns="http://www.w3.org/2500/svg">
                 {/* Enclosure body */}
                 <rect x="4" y="8" width="40" height="24" rx="4" stroke="currentColor" strokeWidth="2" />
                 {/* Top carrying handle */}
@@ -238,19 +148,6 @@ export default function App() {
                 <line x1="34" y1="32" x2="38" y2="32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
-
-
-            {/* CMS Open Button */}
-            {isAdmin && (
-              <button
-                id="cms-toggle-btn"
-                onClick={() => setCmsOpen(!cmsOpen)}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-zinc-100 hover:bg-zinc-200 border border-amber-500/20 text-zinc-850 text-xs font-mono rounded-full cursor-pointer transition-all"
-              >
-                <Wrench size={13} className="text-amber-600 animate-spin" style={{ animationDuration: '4s' }} />
-                <span>CMS Панель</span>
-              </button>
-            )}
           </div>
         </div>
       </header>
@@ -259,14 +156,14 @@ export default function App() {
       <div className="relative flex min-h-screen pt-20">
         
         {/* LANDING BODY */}
-        <div className={`flex-1 transition-all duration-500 ${cmsOpen ? 'lg:pr-[380px]' : ''}`}>
+        <div className="flex-1 transition-all duration-500">
           
           {/* HERO GREETING PANEL */}
           <section className="max-w-7xl mx-auto px-6 pt-12 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
             {/* Left Texts Description */}
             <div className="lg:col-span-7 space-y-6">
               
-              <h1 className="text-4xl md:text-5xl lg:text-[54px] font-display font-medium tracking-tight text-zinc-900 leading-tight uppercase">
+              <h1 className="text-[25px] min-[380px]:text-[28px] min-[450px]:text-[32px] sm:text-4xl md:text-5xl lg:text-[54px] font-display font-medium tracking-tight text-zinc-900 leading-tight uppercase">
                 Профессиональное<br />
                 резервное энергоснабжение<br />
                 <span className="font-black text-amber-600">BAT BOX</span>
@@ -284,7 +181,7 @@ export default function App() {
                   <p className="text-[11px] text-zinc-400 mt-1">Оснащен обогревом картера и термостатом</p>
                 </div>
                 <div className="p-4 bg-white rounded-xl border border-zinc-200/50 shadow-sm flex flex-col gap-1">
-                  <span className="text-xl font-display font-bold text-emerald-600">55 дБ</span>
+                  <span className="text-xl font-display font-bold text-emerald-600">45 дБ</span>
                   <span className="text-xs font-mono text-zinc-500 uppercase tracking-wide">Шумозащита</span>
                   <p className="text-[11px] text-zinc-400 mt-1">Звук на уровне тихого спокойного разговора</p>
                 </div>
@@ -825,16 +722,6 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
-              {/* Reset to factory option for offline testing code in bottom */}
-              <div className="pt-4 flex justify-center gap-4">
-                <button
-                  onClick={handleResetContent}
-                  className="px-4 py-2 bg-transparent hover:bg-zinc-100 border border-zinc-200 text-zinc-400 hover:text-zinc-650 text-[10px] uppercase font-mono tracking-wider rounded-lg transition-all"
-                >
-                  Сбросить правки к заводским
-                </button>
-              </div>
             </div>
           </section>
 
@@ -855,48 +742,10 @@ export default function App() {
                 <span className="text-[10px] font-mono text-zinc-400">
                   © 2026. bat box — Резервное энергоснабжение под ключ.
                 </span>
-                {isAdmin && (
-                  <>
-                    <span className="text-zinc-300">|</span>
-                    <button
-                      onClick={() => setCmsOpen(true)}
-                      className="text-[10px] font-mono text-amber-600 hover:underline transition-colors"
-                    >
-                      CMS Панель
-                    </button>
-                    <span className="text-zinc-300">|</span>
-                    <button
-                      onClick={() => {
-                        setIsAdmin(false);
-                        localStorage.removeItem('genbox_is_admin');
-                        setCmsOpen(false);
-                      }}
-                      className="text-[10px] font-mono text-red-500 hover:underline transition-colors font-semibold"
-                    >
-                      Выйти
-                    </button>
-                  </>
-                )}
               </div>
             </div>
           </footer>
 
-        </div>
-
-        {/* CMS DRAWER SIDE PANEL COLLAPSIBLE */}
-        <div
-          className={`fixed top-0 right-0 h-screen w-full md:w-[380px] z-50 transform transition-transform duration-500 ease-in-out ${
-            cmsOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
-        >
-          {cmsOpen && (
-            <CmsPanel
-              content={content}
-              onUpdateContent={handleUpdateContent}
-              onResetContent={handleResetContent}
-              onClose={() => setCmsOpen(false)}
-            />
-          )}
         </div>
 
       </div>
