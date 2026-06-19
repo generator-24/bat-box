@@ -76,7 +76,7 @@ export default function App() {
   const emailBody = encodeURIComponent(
     `Здравствуйте! Интересует комплект:\n-  Генератор 8.3 кВт + АВР (99 000 руб)\n- Защитный Бокс: ${includeBox ? 'Да (+35 000 руб)' : 'Нет'}\n- Покраска по договоренности: ${customPaint ? 'Да (обсудить цвет)' : 'Стандартный цвет'}\n\nСтоимость конечного комплекта: ${totalPrice.toLocaleString()} руб.`
   );
-  const emailHref = `mailto:gemba.egor@yandex.ru?subject=${emailSubject}&body=${emailBody}`;
+  const emailHref = `mailto:Auotobat@yandex.ru?subject=${emailSubject}&body=${emailBody}`;
 
   // Sync color when color-variation changes
   useEffect(() => {
@@ -658,67 +658,65 @@ export default function App() {
                 Каждый объект загородного жилья имеет свои электрические особенности. Свяжитесь напрямую с нашими руководителями производства для быстрого обсуждения параметров покраски бокса в стиль вашего дизайна и уличного монтажа.
               </p>
 
-              {/* Direct Managers Profiles */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 max-w-2xl mx-auto">
-                {/* Profile 1: Evgeny */}
-                <div className="p-6 bg-white rounded-2xl border border-zinc-200/80 shadow-sm flex flex-col items-center text-center space-y-3">
-                  <div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 font-display font-black text-lg">
-                    ЕИ
-                  </div>
+              {/* Unified Profile Card: Evgeny */}
+              <div className="max-w-xl mx-auto pt-6">
+                <div className="py-5 px-8 bg-white rounded-2xl border border-zinc-200/80 shadow-md flex flex-col items-center text-center space-y-4 transition-all hover:shadow-lg duration-300">
                   <div>
-                    <h4 className="font-display font-bold text-zinc-900 text-sm">Евгений Игоревич</h4>
+                    <div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 font-display font-black text-lg shadow-inner uppercase tracking-wider">
+                      Е
+                    </div>
                   </div>
-                  <div className="w-full flex gap-1.5">
-                    <a
-                      href="tel:+79817425415"
-                      className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white text-[10.5px] font-mono font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <Phone size={12} />
-                      +7 (981) 742-54-15
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("+79817425415", "phone")}
-                      className="px-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg transition-all flex items-center justify-center group"
-                      title="Копировать номер телефона"
-                    >
-                      {copiedPhone ? (
-                        <Check size={12} className="text-emerald-600 animate-bounce" />
-                      ) : (
-                        <Copy size={12} className="text-amber-700 group-hover:scale-110 transition-transform" />
-                      )}
-                    </button>
+                  
+                  <div>
+                    <h4 className="font-display font-bold text-zinc-900 text-base">Евгений</h4>
                   </div>
-                </div>
 
-                {/* Profile 2: Egor */}
-                <div className="p-6 bg-white rounded-2xl border border-zinc-200/80 shadow-sm flex flex-col items-center text-center space-y-3">
-                  <div className="w-14 h-14 rounded-full bg-zinc-50 border border-zinc-200 flex items-center justify-center text-zinc-700 font-display font-black text-lg">
-                    ЕА
-                  </div>
-                  <div>
-                    <h4 className="font-display font-bold text-zinc-900 text-sm">Егор Алексеевич</h4>
-                  </div>
-                  <div className="w-full flex gap-1.5">
-                    <a
-                      href="mailto:gemba.egor@yandex.ru"
-                      className="flex-1 py-2 bg-zinc-700 hover:bg-zinc-800 text-white text-[10.5px] font-mono font-bold uppercase rounded-lg transition-colors flex items-center justify-center gap-1.5"
-                    >
-                      <Mail size={12} />
-                      gemba.egor@yandex.ru
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("gemba.egor@yandex.ru", "email")}
-                      className="px-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border border-zinc-250 rounded-lg transition-all flex items-center justify-center group"
-                      title="Копировать электронную почту"
-                    >
-                      {copiedEmail ? (
-                        <Check size={12} className="text-emerald-600 animate-bounce" />
-                      ) : (
-                        <Copy size={12} className="text-zinc-650 group-hover:scale-110 transition-transform" />
-                      )}
-                    </button>
+                  <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Channel 1: Phone */}
+                    <div className="flex gap-1.5">
+                      <a
+                        href="tel:+79817425415"
+                        className="flex-1 py-3 bg-amber-600 hover:bg-amber-700 text-white text-xs font-mono font-bold uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm shadow-amber-600/10"
+                      >
+                        <Phone size={13} />
+                        <span>+7 (981) 742-54-15</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("+79817425415", "phone")}
+                        className="px-3 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl transition-all flex items-center justify-center group"
+                        title="Копировать номер телефона"
+                      >
+                        {copiedPhone ? (
+                          <Check size={14} className="text-emerald-600 animate-bounce" />
+                        ) : (
+                          <Copy size={13} className="text-amber-700 group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Channel 2: Email */}
+                    <div className="flex gap-1.5">
+                      <a
+                        href={emailHref}
+                        className="flex-1 py-3 bg-zinc-800 hover:bg-zinc-900 text-white text-xs font-mono font-bold uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm shadow-zinc-800/10"
+                      >
+                        <Mail size={13} />
+                        <span>Auotobat@yandex.ru</span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("Auotobat@yandex.ru", "email")}
+                        className="px-3 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 border border-zinc-200 rounded-xl transition-all flex items-center justify-center group"
+                        title="Копировать электронную почту"
+                      >
+                        {copiedEmail ? (
+                          <Check size={14} className="text-emerald-600 animate-bounce" />
+                        ) : (
+                          <Copy size={13} className="text-zinc-650 group-hover:scale-110 transition-transform" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
